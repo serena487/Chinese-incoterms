@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>무역용어 빈칸 연습문제</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --surface2: #1e2436;
+    --accent: #e8b84b;
+    --accent2: #5b8af0;
+    --accent3: #e05c5c;
+    --text: #e8e6df;
+    --muted: #7a8099;
+    --correct: #4caf7d;
+    --wrong: #e05c5c;
+    --border: #2a3050;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Serif KR', serif;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(91,138,240,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(91,138,240,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+    padding: 40px 32px 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '贸易';
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 120px;
+    font-weight: 700;
+    color: rgba(232,184,75,0.05);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  header h1 span {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 14px;
+    color: var(--muted);
+    display: block;
+    margin-top: 6px;
+    letter-spacing: 3px;
+    font-weight: 400;
+  }
+
+  .score-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+    justify-content: center;
+  }
+
+  .score-pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 18px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  .progress-wrap {
+    flex: 1;
+    max-width: 240px;
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  /* Category tabs */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    padding: 8px 18px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover { border-color: var(--accent2); color: var(--text); }
+  .tab-btn.active {
+    background: var(--accent2);
+    border-color: var(--accent2);
+    color: white;
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 32px;
+    margin-bottom: 20px;
+    position: relative;
+    transition: border-color 0.3s;
+    animation: fadeIn 0.3s ease;
+  }
+  .question-card.correct-card { border-color: var(--correct); }
+  .question-card.wrong-card { border-color: var(--wrong); }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-number {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+  }
+
+  .category-tag {
+    display: inline-block;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 10px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+    letter-spacing: 1px;
+  }
+  .cat-offer { background: rgba(91,138,240,0.15); color: var(--accent2); border: 1px solid rgba(91,138,240,0.3); }
+  .cat-inco { background: rgba(232,184,75,0.12); color: var(--accent); border: 1px solid rgba(232,184,75,0.3); }
+  .cat-doc { background: rgba(76,175,125,0.12); color: var(--correct); border: 1px solid rgba(76,175,125,0.3); }
+  .cat-pay { background: rgba(224,92,92,0.12); color: var(--accent3); border: 1px solid rgba(224,92,92,0.3); }
+
+  .q-text {
+    font-size: 16px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  .q-text .blank {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    vertical-align: bottom;
+    position: relative;
+  }
+
+  .q-text input[type="text"] {
+    background: var(--surface2);
+    border: none;
+    border-bottom: 2px solid var(--accent2);
+    color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 15px;
+    padding: 2px 6px;
+    outline: none;
+    border-radius: 0;
+    transition: border-color 0.2s, background 0.2s;
+    min-width: 60px;
+  }
+
+  .q-text input[type="text"]:focus {
+    border-bottom-color: var(--accent);
+    background: rgba(232,184,75,0.06);
+  }
+  .q-text input.correct-input {
+    border-bottom-color: var(--correct);
+    color: var(--correct);
+    background: rgba(76,175,125,0.08);
+  }
+  .q-text input.wrong-input {
+    border-bottom-color: var(--wrong);
+    color: var(--wrong);
+    background: rgba(224,92,92,0.08);
+  }
+
+  .hint-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .hint-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 2px 10px;
+    border-radius: 2px;
+  }
+
+  .answer-reveal {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 13px;
+    color: var(--correct);
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba(76,175,125,0.07);
+    border-left: 3px solid var(--correct);
+    border-radius: 0 3px 3px 0;
+    display: none;
+  }
+  .answer-reveal.show { display: block; }
+
+  .wrong-msg {
+    font-size: 12px;
+    color: var(--wrong);
+    margin-top: 8px;
+    display: none;
+  }
+  .wrong-msg.show { display: block; }
+
+  /* Buttons */
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 8px 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-family: 'Noto Serif KR', serif;
+    font-size: 13px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { background: var(--surface2); border-color: var(--accent2); }
+  .btn-check {
+    background: var(--accent2);
+    border-color: var(--accent2);
+    color: white;
+    font-weight: 600;
+  }
+  .btn-check:hover { background: #4a79df; border-color: #4a79df; }
+  .btn-hint { border-color: var(--accent); color: var(--accent); }
+  .btn-hint:hover { background: rgba(232,184,75,0.1); }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ctrl-btn {
+    padding: 9px 22px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'Noto Serif KR', serif;
+    font-size: 13px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .ctrl-btn:hover { background: var(--surface2); border-color: var(--accent2); }
+  .ctrl-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0f1117;
+    font-weight: 700;
+  }
+  .ctrl-btn.primary:hover { background: #d4a63a; }
+
+  .result-summary {
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    padding: 28px 32px;
+    text-align: center;
+    margin-top: 32px;
+    display: none;
+  }
+  .result-summary.show { display: block; }
+  .result-big {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 52px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .result-sub {
+    color: var(--muted);
+    font-size: 14px;
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+
+  .section-title {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Sticky footer controls */
+  .sticky-controls {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(15,17,23,0.95);
+    border-top: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    padding: 14px 24px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    z-index: 100;
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 20px 14px 80px; }
+    header { padding: 28px 20px 24px; }
+    header h1 { font-size: 22px; }
+    .question-card { padding: 20px 16px; }
+    .q-text { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>무역용어 빈칸 연습문제
+      <span>国际贸易术语 填空练习</span>
+    </h1>
+    <div class="score-bar">
+      <div class="score-pill" id="scoreDisplay">0 / 0</div>
+      <div class="progress-wrap">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <div class="score-pill" id="pctDisplay">0%</div>
+    </div>
+  </header>
+
+  <div class="tabs" id="tabsRow"></div>
+  <div class="controls">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="ctrl-btn" onclick="showAllAnswers()">정답 모두 보기</button>
+      <button class="ctrl-btn" onclick="checkAll()">전체 채점</button>
+    </div>
+    <button class="ctrl-btn primary" onclick="resetAll()">다시 풀기 ↺</button>
+  </div>
+
+  <div id="quizArea"></div>
+
+  <div class="result-summary" id="resultSummary">
+    <div class="result-big" id="resultBig"></div>
+    <div class="result-sub" id="resultSub"></div>
+  </div>
+</div>
+
+<div class="sticky-controls">
+  <button class="ctrl-btn" onclick="checkAll()">✓ 전체 채점</button>
+  <button class="ctrl-btn primary" onclick="resetAll()">↺ 다시 풀기</button>
+</div>
+
+<script>
+const questions = [
+  // ── 청약과 승낙 ──
+  {
+    id: 1, cat: 'offer', catLabel: '청약과 승낙', catLabelZh: '发盘与接受',
+    text: '무역계약은 청약자가 피청약자에게 일정 조건으로 계약을 체결하고 싶다는 [①] 표시를 하고, 피청약자가 이에 동의하는 [②]을 함으로써 성립한다.',
+    blanks: [
+      { id: 'q1a', answer: '의사', hint: '意思表示의 앞 두 글자 (意思)', size: 4 },
+      { id: 'q1b', answer: '승낙', hint: '接受 (jiēshòu)', size: 4 },
+    ],
+    note: '무역계약 성립 = 청약(发盘 offer) + 승낙(接受 acceptance)'
+  },
+  {
+    id: 2, cat: 'offer', catLabel: '청약과 승낙', catLabelZh: '发盘与接受',
+    text: '매도인이 발행하는 offer를 [①](卖方报盘)이라 하고, 매수인이 발행하는 offer를 [②](买方报盘)이라 한다.',
+    blanks: [
+      { id: 'q2a', answer: '매도청약', hint: '판매청약 / selling offer', size: 6 },
+      { id: 'q2b', answer: '매수청약', hint: '매입청약 / buying offer', size: 6 },
+    ],
+    note: '发行主体에 따른 분류'
+  },
+  {
+    id: 3, cat: 'offer', catLabel: '청약과 승낙', catLabelZh: '发盘与接受',
+    text: '확정성이 확보된 청약을 [①](实盘 firm offer)라 하고, 확정성이 확보되지 않은 청약을 [②](虚盘 free offer)라 한다.',
+    blanks: [
+      { id: 'q3a', answer: '확정청약', hint: '实盘 (shípán)', size: 6 },
+      { id: 'q3b', answer: '불확정청약', hint: '虚盘 (xūpán)', size: 7 },
+    ],
+    note: '확정성 여부에 따른 분류'
+  },
+  {
+    id: 4, cat: 'offer', catLabel: '청약과 승낙', catLabelZh: '发盘与接受',
+    text: '원청약에 대하여 수정을 가한 offer를 [①](还盘 counter offer)라 한다. 오퍼를 받은 측이 조건에 동의하지 않고 제시하는 새로운 오퍼이다.',
+    blanks: [
+      { id: 'q4a', answer: '반대청약', hint: '还盘 / 还价 (huánpán)', size: 6 },
+    ],
+    note: '发行方向에 따른 분류'
+  },
+  {
+    id: 5, cat: 'offer', catLabel: '청약과 승낙', catLabelZh: '发盘与接受',
+    text: '청약의 [①](撤销)는 원칙적으로 불가능하지만, 청약의 [②](撤回)는 청약의 의사표시가 상대방에게 도달하기 전 또는 동시에 가능하다.',
+    blanks: [
+      { id: 'q5a', answer: '취소', hint: '撤销 (chèxiāo)', size: 4 },
+      { id: 'q5b', answer: '철회', hint: '撤回 (chèhuí)', size: 4 },
+    ],
+    note: '취소(撤销) vs 철회(撤回) 구별 중요!'
+  },
+  {
+    id: 6, cat: 'offer', catLabel: '청약과 승낙', catLabelZh: '发盘与接受',
+    text: '승낙의 요건은 [①] 수락(absolute and unconditional accept)이어야 하며, 승낙이 발효되면 [②]이 성립되기 때문에 취소될 수 없다.',
+    blanks: [
+      { id: 'q6a', answer: '절대적·무조건적', hint: 'absolute and unconditional', size: 10 },
+      { id: 'q6b', answer: '계약', hint: '계약성립', size: 3 },
+    ],
+    note: '승낙(接受)의 요건'
+  },
+
+  // ── 인코텀즈 ──
+  {
+    id: 7, cat: 'inco', catLabel: '인코텀즈 2020', catLabelZh: '国际贸易术语解释通则',
+    text: '인코텀즈(Incoterms)는 [①](国际商会; ICC)가 1936년 처음 제정한 국제무역 정형거래조건 해석 규칙이며, 현재는 [②] 버전을 사용한다.',
+    blanks: [
+      { id: 'q7a', answer: '국제상업회의소', hint: '国际商会 (guójì shānghui)', size: 8 },
+      { id: 'q7b', answer: '2020', hint: '最新版本', size: 5 },
+    ],
+    note: '강제성 없음 → 계약서에 명시 필요'
+  },
+  {
+    id: 8, cat: 'inco', catLabel: '인코텀즈 2020', catLabelZh: '国际贸易术语解释通则',
+    text: 'Incoterms 2020의 11가지 조건은 E, C, F, D 4개 그룹으로 구분된다. [①] 그룹은 선적지 인도, [②] 그룹은 양륙지(목적지) 인도 조건이다.',
+    blanks: [
+      { id: 'q8a', answer: 'E, C, F', hint: '출발지 인도', size: 6 },
+      { id: 'q8b', answer: 'D', hint: '목적지 인도', size: 3 },
+    ],
+    note: 'E·C·F = 선적지 인도 / D = 목적지 인도'
+  },
+  {
+    id: 9, cat: 'inco', catLabel: '인코텀즈 2020', catLabelZh: '国际贸易术语解释通则',
+    text: '[①](工厂交货)은 매도인 최소 의무조건이며, [②](完税后交货)는 매도인 최대 의무조건이다.',
+    blanks: [
+      { id: 'q9a', answer: 'EXW', hint: 'EX-Works / 공장인도조건', size: 5 },
+      { id: 'q9b', answer: 'DDP', hint: 'Delivered Duty Paid / 관세지급인도조건', size: 5 },
+    ],
+    note: 'EXW ↔ DDP는 통관의무도 반대'
+  },
+  {
+    id: 10, cat: 'inco', catLabel: '인코텀즈 2020', catLabelZh: '国际贸易术语解释通则',
+    text: '[①](成本加运费加保险费) 조건에서 매도인은 선적항에서 본선에 물품을 인도할 때 위험이 이전되고, 목적항까지의 운임과 [②]를 부담한다.',
+    blanks: [
+      { id: 'q10a', answer: 'CIF', hint: 'Cost Insurance and Freight', size: 5 },
+      { id: 'q10b', answer: '보험료', hint: '보험계약 체결 의무 있음', size: 5 },
+    ],
+    note: 'CIF: 위험이전(선적항) ≠ 비용이전(목적항)'
+  },
+  {
+    id: 11, cat: 'inco', catLabel: '인코텀즈 2020', catLabelZh: '国际贸易术语解释通则',
+    text: '[①](运费付至) 조건과 [②](运费保险费付至) 조건은 모두 비용의 이전 시점(목적지)과 위험의 이전 시점(운송인 인도 장소)이 다른 두 가지 분기점을 가진다.',
+    blanks: [
+      { id: 'q11a', answer: 'CPT', hint: 'Carriage Paid To', size: 5 },
+      { id: 'q11b', answer: 'CIP', hint: 'Carriage and Insurance Paid to', size: 5 },
+    ],
+    note: 'CPT + 보험료 = CIP'
+  },
+  {
+    id: 12, cat: 'inco', catLabel: '인코텀즈 2020', catLabelZh: '国际贸易术语解释通则',
+    text: '[①](船边交货) 조건은 매도인이 지정 선적항의 선박 옆에 물품을 놓아두면 위험이 이전되고, [②](船上交货) 조건은 매도인이 본선에 물품을 적재하면 위험이 이전된다.',
+    blanks: [
+      { id: 'q12a', answer: 'FAS', hint: 'Free Alongside Ship', size: 5 },
+      { id: 'q12b', answer: 'FOB', hint: 'Free On Board', size: 5 },
+    ],
+    note: 'FAS: 선박 옆 / FOB: 본선 적재'
+  },
+  {
+    id: 13, cat: 'inco', catLabel: '인코텀즈 2020', catLabelZh: '国际贸易术语解释通则',
+    text: '[①](目的地交货) 조건과 [②](卸货地交货) 조건의 차이는, 후자에는 매도인의 양하 의무가 추가된다는 점이다.',
+    blanks: [
+      { id: 'q13a', answer: 'DAP', hint: 'Delivered At Place', size: 5 },
+      { id: 'q13b', answer: 'DPU', hint: 'Delivered at Place Unloaded', size: 5 },
+    ],
+    note: 'DAP + 양하 의무 = DPU'
+  },
+  {
+    id: 14, cat: 'inco', catLabel: '인코텀즈 2020', catLabelZh: '国际贸易术语解释通则',
+    text: '인코텀즈에서 보험 가입 의무가 있는 조건은 [①]와 [②] 두 가지뿐이며, 나머지 조건은 위험을 부담하는 측이 가입하면 된다.',
+    blanks: [
+      { id: 'q14a', answer: 'CIP', hint: '최대담보조건으로 부보 (Incoterms 2020 개정)', size: 5 },
+      { id: 'q14b', answer: 'CIF', hint: '최소담보조건으로 부보', size: 5 },
+    ],
+    note: 'CIP(최대담보) / CIF(최소담보) — Incoterms 2020 기준'
+  },
+
+  // ── 서류 용어 ──
+  {
+    id: 15, cat: 'doc', catLabel: '청약서신·서류 용어', catLabelZh: '发盘信函与单据术语',
+    text: '[①](信用证; LC)는 무역결제 수단으로, 매도인이 신용장 조건에 맞는 서류를 은행에 제시할 경우, 은행이 매수인을 대신하여 대금을 지급하겠다는 은행의 조건부 [②] 확약서이다.',
+    blanks: [
+      { id: 'q15a', answer: '신용장', hint: 'Letter of Credit / 信用证 (xìnyòngzhèng)', size: 5 },
+      { id: 'q15b', answer: '지급', hint: '은행의 조건부 지급 확약', size: 4 },
+    ],
+    note: 'UCP 600 기준 — 신용장은 취소불능이 원칙'
+  },
+  {
+    id: 16, cat: 'doc', catLabel: '청약서신·서류 용어', catLabelZh: '发盘信函与单据术语',
+    text: '[①](不可撤销信用证)는 신용장 거래 모든 당사자 간의 합의 없이는 내용 변경 또는 취소가 불가능한 신용장이며, 신용장통일규칙 [②] 제2조에서 신용장은 명칭에 관계없이 취소불능이라고 규정한다.',
+    blanks: [
+      { id: 'q16a', answer: '취소불능 신용장', hint: 'Irrevocable Credit / 不可撤销信用证', size: 9 },
+      { id: 'q16b', answer: 'UCP 600', hint: '신용장통일규칙', size: 8 },
+    ],
+    note: '현재 모든 신용장은 취소불능이 기본'
+  },
+  {
+    id: 17, cat: 'doc', catLabel: '청약서신·서류 용어', catLabelZh: '发盘信函与单据术语',
+    text: '[①](形式发票; PI: Proforma Invoice)는 거래 확정 전 매도인이 거래내용을 정리하여 협의·확인하는 실무문서이다. PI를 근거로 매수인은 [②](采购订单; PO: Purchase Order)를 작성하여 매도인에게 송부한다.',
+    blanks: [
+      { id: 'q17a', answer: '견적송장', hint: '形式发票 (xíngshì fāpiào)', size: 6 },
+      { id: 'q17b', answer: '구매주문서', hint: 'Purchase Order / 采购订单', size: 7 },
+    ],
+    note: '계약 후에는 상업송장(Commercial Invoice)이 작성됨'
+  },
+  {
+    id: 18, cat: 'doc', catLabel: '청약서신·서류 용어', catLabelZh: '发盘信函与单据术语',
+    text: '[①]((海运)提单; B/L)은 운송 서류 중 가장 중요한 서류로, 운송인이 발행하며 [②]를 통해 화물의 소유권을 이전할 수 있는 권리증권이다.',
+    blanks: [
+      { id: 'q18a', answer: '선하증권', hint: 'Bill of Lading / (海运)提单 (tídān)', size: 6 },
+      { id: 'q18b', answer: '이서(배서)', hint: '背書 — 서명으로 소유권 이전', size: 7 },
+    ],
+    note: 'B/L 3대 기능: 화물수취증 / 운송계약서 / 권리증권'
+  },
+  {
+    id: 19, cat: 'doc', catLabel: '청약서신·서류 용어', catLabelZh: '发盘信函与单据术语',
+    text: '항공운송 시에는 [①](空运单; AWB: Air Waybill)을, 두 가지 이상의 운송수단을 이용할 때는 [②](多式联运单据; CTD)를 발행한다.',
+    blanks: [
+      { id: 'q19a', answer: '항공화물운송장', hint: 'Air Waybill / 空运单 (kōngyùndān)', size: 8 },
+      { id: 'q19b', answer: '복합운송서류', hint: 'Combined Transport Documents / 多式联运单据', size: 7 },
+    ],
+    note: '해상화물운송장(SWB)도 기억할 것'
+  },
+
+  // ── 결제 용어 ──
+  {
+    id: 20, cat: 'pay', catLabel: '결제 용어', catLabelZh: '贸易结算术语',
+    text: '[①](托收; Collection)은 환어음 소지인이 자신의 거래 은행을 통해 지급인 소재지의 은행에 어음을 송부하여 대금을 회수하는 행위이며, 이때 사용하는 대금청구 서류를 [②](汇票; B/E)라 한다.',
+    blanks: [
+      { id: 'q20a', answer: '추심', hint: 'Collection / 托收 (tuōshōu)', size: 4 },
+      { id: 'q20b', answer: '환어음', hint: 'Bill of Exchange / 汇票 (huìpiào)', size: 5 },
+    ],
+    note: '환어음 지급인: 추심 → 매수인 / 신용장 → 은행'
+  },
+  {
+    id: 21, cat: 'pay', catLabel: '결제 용어', catLabelZh: '贸易结算术语',
+    text: '[①](即期汇票; sight draft)는 어음이 제시되는 동시에 지급인이 대금을 지급하는 환어음이다. 환어음에는 발행인, 지급인, [②]이 명시되어 있다.',
+    blanks: [
+      { id: 'q21a', answer: '일람불환어음', hint: 'sight draft / 即期汇票 (jíqī huìpiào)', size: 8 },
+      { id: 'q21b', answer: '수취인', hint: '발행인 / 지급인 / 수취인', size: 5 },
+    ],
+    note: '일람불 = 제시 즉시 지급'
+  },
+  {
+    id: 22, cat: 'pay', catLabel: '결제 용어', catLabelZh: '贸易结算术语',
+    text: '[①](货物保险)은 화물을 보험 목적물로 하는 보험이다. 런던보험자협회(IUA)가 정한 [②](协会货物保险条款; ICC)에는 ICC(A), ICC(B), ICC(C) 3종류의 신약관이 있다.',
+    blanks: [
+      { id: 'q22a', answer: '적하보험', hint: 'cargo insurance / 货物保险 (huòwù bǎoxiǎn)', size: 6 },
+      { id: 'q22b', answer: '협회적하약관', hint: 'Institute Cargo Clauses / 协会货物保险条款', size: 8 },
+    ],
+    note: 'ICC(A) 최대담보 / ICC(C) 최소담보'
+  },
+
+  // ── 중국어 집중 ──
+  {
+    id: 23, cat: 'offer', catLabel: '중국어 쓰기', catLabelZh: '汉语书写练习',
+    text: '다음 무역 용어의 중국어 표기를 쓰시오.\n청약(offer) → [①] / 승낙(acceptance) → [②]',
+    blanks: [
+      { id: 'q23a', answer: '发盘', hint: '또는 报盘 / 报价', size: 6 },
+      { id: 'q23b', answer: '接受', hint: 'jiē shòu', size: 6 },
+    ],
+    note: '발음: 发盘(fāpán) / 接受(jiēshòu)'
+  },
+  {
+    id: 24, cat: 'doc', catLabel: '중국어 쓰기', catLabelZh: '汉语书写练习',
+    text: '다음 무역 서류의 중국어 표기를 쓰시오.\n신용장(LC) → [①] / 선하증권(B/L) → [②]',
+    blanks: [
+      { id: 'q24a', answer: '信用证', hint: 'xìnyòngzhèng', size: 6 },
+      { id: 'q24b', answer: '提单', hint: 'tídān (해운은 海运提单)', size: 5 },
+    ],
+    note: '발음: 信用证(xìnyòngzhèng) / 提单(tídān)'
+  },
+  {
+    id: 25, cat: 'inco', catLabel: '중국어 쓰기', catLabelZh: '汉语书写练习',
+    text: '다음 인코텀즈 조건의 중국어 표기를 쓰시오.\nFOB → [①] / CIF → [②]',
+    blanks: [
+      { id: 'q25a', answer: '船上交货', hint: 'chuánshàng jiāohuò', size: 7 },
+      { id: 'q25b', answer: '成本加运费加保险费', hint: 'chéngběn jiā yùnfèi jiā bǎoxiǎnfèi', size: 12 },
+    ],
+    note: 'FOB: 本船인도 / CIF: 운임+보험료 포함'
+  },
+];
+
+const CATS = [
+  { id: 'all', label: '전체', labelZh: '全部' },
+  { id: 'offer', label: '청약·승낙', labelZh: '发盘与接受' },
+  { id: 'inco', label: '인코텀즈', labelZh: '国际贸易术语' },
+  { id: 'doc', label: '서류·결제', labelZh: '单据与结算' },
+  { id: 'pay', label: '결제', labelZh: '结算' },
+];
+
+let currentCat = 'all';
+let answered = {};
+let correct = {};
+
+function filteredQ() {
+  return currentCat === 'all' ? questions : questions.filter(q => q.cat === currentCat);
+}
+
+function buildTabs() {
+  const row = document.getElementById('tabsRow');
+  row.innerHTML = '';
+  // Combine doc and pay under one display for cleaner UI
+  const tabs = [
+    { id: 'all', label: '전체 ALL' },
+    { id: 'offer', label: '청약·승낙 发盘' },
+    { id: 'inco', label: '인코텀즈 Incoterms' },
+    { id: 'doc', label: '서류 单据' },
+    { id: 'pay', label: '결제 结算' },
+  ];
+  tabs.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (t.id === currentCat ? ' active' : '');
+    btn.textContent = t.label;
+    btn.onclick = () => { currentCat = t.id; buildTabs(); renderQuiz(); };
+    row.appendChild(btn);
+  });
+}
+
+function catClass(cat) {
+  return { offer: 'cat-offer', inco: 'cat-inco', doc: 'cat-doc', pay: 'cat-pay' }[cat] || 'cat-offer';
+}
+
+function renderQuiz() {
+  const area = document.getElementById('quizArea');
+  area.innerHTML = '';
+  const qs = filteredQ();
+
+  qs.forEach((q, idx) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = 'card-' + q.id;
+
+    // Rebuild text with inputs
+    let textHtml = q.text;
+    q.blanks.forEach((b, bi) => {
+      const placeholder = '한/중 입력';
+      const size = b.size || 6;
+      const val = answered[b.id] || '';
+      const cls = correct[b.id] === true ? 'correct-input' : correct[b.id] === false ? 'wrong-input' : '';
+      textHtml = textHtml.replace(
+        `[${String.fromCharCode(9312 + bi)}]`,
+        `<span class="blank"><input type="text" id="${b.id}" value="${val}" placeholder="${placeholder}" style="width:${size * 18}px" class="${cls}" onkeydown="if(event.key==='Enter')checkCard(${q.id})"></span>`
+      );
+    });
+    // Handle newline
+    textHtml = textHtml.replace(/\n/g, '<br>');
+
+    let hintHtml = q.blanks.map(b =>
+      `<span class="hint-tag">💡 ${b.hint}</span>`
+    ).join('');
+
+    const allCorrect = q.blanks.every(b => correct[b.id] === true);
+    const anyWrong = q.blanks.some(b => correct[b.id] === false);
+
+    card.innerHTML = `
+      <div class="q-number">Q${String(idx+1).padStart(2,'0')} · ${q.blanks.length}개 빈칸</div>
+      <span class="category-tag ${catClass(q.cat)}">${q.catLabel} / ${q.catLabelZh}</span>
+      <div class="q-text">${textHtml}</div>
+      <div class="btn-row">
+        <button class="btn btn-check" onclick="checkCard(${q.id})">채점</button>
+        <button class="btn btn-hint" onclick="toggleHint(${q.id})">힌트 보기</button>
+        <button class="btn" onclick="revealCard(${q.id})">정답 보기</button>
+      </div>
+      <div class="hint-row" id="hint-${q.id}" style="display:none;margin-top:10px;">${hintHtml}</div>
+      <div class="answer-reveal ${allCorrect || answered['reveal-'+q.id] ? 'show' : ''}" id="answer-${q.id}">
+        ✅ 정답: ${q.blanks.map((b,bi)=>`[${bi+1}] <strong>${b.answer}</strong>`).join(' · ')}
+        <br><span style="font-size:11px;color:var(--muted);margin-top:4px;display:inline-block;">📌 ${q.note}</span>
+      </div>
+      <div class="wrong-msg" id="wrong-${q.id}">❌ 틀렸습니다. 다시 확인해보세요.</div>
+    `;
+
+    if (allCorrect) card.classList.add('correct-card');
+    else if (anyWrong) card.classList.add('wrong-card');
+
+    area.appendChild(card);
+  });
+
+  updateScore();
+}
+
+function checkCard(qid) {
+  const q = questions.find(x => x.id === qid);
+  const card = document.getElementById('card-' + qid);
+  let allOk = true;
+
+  q.blanks.forEach(b => {
+    const input = document.getElementById(b.id);
+    if (!input) return;
+    const val = input.value.trim();
+    answered[b.id] = val;
+    const ok = val === b.answer;
+    correct[b.id] = ok ? true : false;
+    input.className = ok ? 'correct-input' : 'wrong-input';
+    if (!ok) allOk = false;
+  });
+
+  card.classList.remove('correct-card', 'wrong-card');
+  if (allOk) {
+    card.classList.add('correct-card');
+    document.getElementById('answer-' + qid).classList.add('show');
+    document.getElementById('wrong-' + qid).classList.remove('show');
+  } else {
+    card.classList.add('wrong-card');
+    document.getElementById('wrong-' + qid).classList.add('show');
+  }
+
+  updateScore();
+}
+
+function revealCard(qid) {
+  answered['reveal-'+qid] = true;
+  const q = questions.find(x => x.id === qid);
+  q.blanks.forEach(b => {
+    const input = document.getElementById(b.id);
+    if (input) {
+      input.value = b.answer;
+      answered[b.id] = b.answer;
+      correct[b.id] = true;
+      input.className = 'correct-input';
+    }
+  });
+  const card = document.getElementById('card-' + qid);
+  card.classList.remove('wrong-card');
+  card.classList.add('correct-card');
+  document.getElementById('answer-' + qid).classList.add('show');
+  document.getElementById('wrong-' + qid).classList.remove('show');
+  updateScore();
+}
+
+function toggleHint(qid) {
+  const el = document.getElementById('hint-' + qid);
+  el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+}
+
+function checkAll() {
+  filteredQ().forEach(q => checkCard(q.id));
+}
+
+function showAllAnswers() {
+  filteredQ().forEach(q => revealCard(q.id));
+}
+
+function resetAll() {
+  answered = {}; correct = {};
+  document.getElementById('resultSummary').classList.remove('show');
+  renderQuiz();
+}
+
+function updateScore() {
+  const qs = filteredQ();
+  const totalBlanks = qs.reduce((s, q) => s + q.blanks.length, 0);
+  const correctCount = qs.reduce((s, q) =>
+    s + q.blanks.filter(b => correct[b.id] === true).length, 0);
+  const pct = totalBlanks ? Math.round(correctCount / totalBlanks * 100) : 0;
+
+  document.getElementById('scoreDisplay').textContent = `${correctCount} / ${totalBlanks}`;
+  document.getElementById('pctDisplay').textContent = `${pct}%`;
+  document.getElementById('progressFill').style.width = pct + '%';
+
+  const allAnswered = qs.every(q => q.blanks.every(b => correct[b.id] !== undefined));
+  if (allAnswered && totalBlanks > 0) {
+    const summary = document.getElementById('resultSummary');
+    summary.classList.add('show');
+    document.getElementById('resultBig').textContent = pct + '%';
+    let msg = pct === 100 ? '완벽합니다! 🎉 所有答案正确！'
+      : pct >= 80 ? '훌륭해요! 👍 继续加油！'
+      : pct >= 60 ? '좋아요! 복습을 조금 더! 加油复习！'
+      : '다시 한번 복습해봐요! 再复习一下吧！';
+    document.getElementById('resultSub').textContent = `${correctCount}/${totalBlanks} 정답 · ${msg}`;
+  }
+}
+
+// Init
+buildTabs();
+renderQuiz();
+</script>
+</body>
+</html>
