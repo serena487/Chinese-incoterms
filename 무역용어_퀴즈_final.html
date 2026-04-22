@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="무역용어 빈칸 채우기 연습문제 — 청약·승낙, 인코텀즈 2020, 무역서류, 결제 용어">
+<title>무역용어 연습문제</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:     #0d0f18;
+  --s1:     #13151f;
+  --s2:     #191c2a;
+  --s3:     #1f2335;
+  --border: #252840;
+  --accent: #e2b45a;
+  --blue:   #5c8ee0;
+  --green:  #4db87a;
+  --red:    #e05c5c;
+  --purple: #9b72e0;
+  --teal:   #4dc4b8;
+  --text:   #e4e0d8;
+  --muted:  #6c7090;
+  --radius: 6px;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Serif KR', serif;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(circle, rgba(92,142,224,.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 264px; flex-shrink: 0;
+  background: var(--s1);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0;
+  overflow-y: auto; z-index: 40;
+  transition: transform .25s ease;
+}
+.sidebar::-webkit-scrollbar { width: 3px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); }
+
+.sb-brand { padding: 22px 18px 16px; border-bottom: 1px solid var(--border); }
+.sb-brand h1 { font-size: 14px; font-weight: 700; color: var(--accent); line-height: 1.45; }
+.sb-brand .zh { font-family: 'Noto Sans SC', sans-serif; font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+.sb-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.stat-box { background: var(--s2); border: 1px solid var(--border); border-radius: 4px; padding: 8px 10px; text-align: center; }
+.stat-box .num { font-family: 'IBM Plex Mono', monospace; font-size: 18px; font-weight: 600; line-height: 1; margin-bottom: 3px; }
+.stat-box .lbl { font-size: 9px; color: var(--muted); letter-spacing: .5px; }
+.stat-box.sc .num { color: var(--green); }
+.stat-box.sw .num { color: var(--red); }
+.stat-box.st .num { color: var(--accent); }
+.stat-box.sp .num { color: var(--blue); }
+
+.sb-section { padding: 11px 18px 5px; font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+
+.cat-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 18px; cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all .15s; font-size: 12px; color: var(--muted);
+}
+.cat-item:hover { background: var(--s2); color: var(--text); }
+.cat-item.active { border-left-color: var(--accent); background: var(--s2); color: var(--accent); }
+.ci-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.ci-count { margin-left: auto; font-family: 'IBM Plex Mono', monospace; font-size: 9px; background: var(--s3); padding: 1px 6px; border-radius: 8px; color: var(--muted); }
+
+.sb-tools { padding: 10px 12px; border-top: 1px solid var(--border); margin-top: auto; display: flex; flex-direction: column; gap: 6px; }
+.sb-btn {
+  padding: 7px 12px; border: 1px solid var(--border); border-radius: 4px;
+  background: transparent; color: var(--muted);
+  font-family: 'Noto Serif KR', serif; font-size: 11px;
+  cursor: pointer; transition: all .15s; text-align: left;
+  display: flex; align-items: center; gap: 7px;
+}
+.sb-btn:hover { background: var(--s2); color: var(--text); border-color: var(--blue); }
+.sb-btn.pri { background: var(--accent); border-color: var(--accent); color: #0d0f18; font-weight: 700; }
+.sb-btn.pri:hover { background: #c9a04e; }
+.sb-btn.danger:hover { border-color: var(--red); color: var(--red); }
+
+/* ── Main ── */
+.main { margin-left: 264px; flex: 1; display: flex; flex-direction: column; }
+
+/* ── Topbar ── */
+.topbar {
+  position: sticky; top: 0; z-index: 30;
+  background: rgba(13,15,24,.93);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 26px; display: flex; align-items: center; gap: 14px; height: 50px; flex-shrink: 0;
+}
+.topbar-left { display: flex; align-items: baseline; gap: 8px; }
+#topTitle { font-size: 13px; font-weight: 600; color: var(--text); }
+#topZh { font-family: 'Noto Sans SC', sans-serif; font-size: 10px; color: var(--muted); }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 9px; }
+
+.mode-toggle { display: flex; background: var(--s2); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.mode-btn { padding: 4px 11px; font-size: 11px; font-family: 'Noto Serif KR', serif; color: var(--muted); cursor: pointer; border: none; background: transparent; transition: all .15s; }
+.mode-btn.on { background: var(--accent); color: #0d0f18; font-weight: 700; }
+.mode-btn:hover:not(.on) { color: var(--text); }
+
+.prog-pill { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); background: var(--s2); border: 1px solid var(--border); padding: 3px 10px; border-radius: 20px; }
+.prog-pill span { color: var(--accent); }
+
+.top-btn { padding: 4px 12px; border: 1px solid var(--border); border-radius: 4px; background: transparent; color: var(--text); font-family: 'Noto Serif KR', serif; font-size: 11px; cursor: pointer; transition: all .15s; }
+.top-btn:hover { background: var(--s2); border-color: var(--blue); }
+
+.prog-bar-wrap { height: 2px; background: var(--border); flex-shrink: 0; }
+.prog-bar-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--accent)); transition: width .5s ease; }
+
+/* ── Content ── */
+.content { padding: 24px 26px 100px; flex: 1; }
+
+.empty-state { text-align: center; padding: 80px 20px; color: var(--muted); }
+.empty-state .big { font-size: 48px; margin-bottom: 14px; }
+
+/* ── Question Card ── */
+.q-card {
+  background: var(--s1); border: 1px solid var(--border);
+  border-radius: var(--radius); margin-bottom: 12px; overflow: hidden;
+  transition: border-color .3s, box-shadow .3s;
+  animation: fadeUp .2s ease both;
+}
+@keyframes fadeUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+.q-card.st-correct { border-color: var(--green); box-shadow: 0 0 0 1px rgba(77,184,122,.1); }
+.q-card.st-wrong   { border-color: var(--red);   box-shadow: 0 0 0 1px rgba(224,92,92,.1); }
+.q-card.st-reveal  { border-color: var(--accent); }
+
+.q-top {
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 15px 9px; background: var(--s2);
+  border-bottom: 1px solid var(--border);
+}
+.q-num { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #0d0f18; background: var(--accent); padding: 2px 7px; border-radius: 3px; flex-shrink: 0; }
+.cat-badge { font-family: 'Noto Sans SC', sans-serif; font-size: 9px; padding: 1px 8px; border-radius: 10px; border: 1px solid; letter-spacing: .3px; }
+.cb-offer  { color: var(--blue);   border-color: rgba(92,142,224,.4);  background: rgba(92,142,224,.08); }
+.cb-inco   { color: var(--accent); border-color: rgba(226,180,90,.4);  background: rgba(226,180,90,.08); }
+.cb-doc    { color: var(--green);  border-color: rgba(77,184,122,.4);  background: rgba(77,184,122,.08); }
+.cb-pay    { color: var(--teal);   border-color: rgba(77,196,184,.4);  background: rgba(77,196,184,.08); }
+.cb-zh     { color: var(--purple); border-color: rgba(155,114,224,.4); background: rgba(155,114,224,.08); }
+.q-blanks  { margin-left: auto; font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--muted); }
+.q-icon    { font-size: 13px; }
+
+.q-body { padding: 14px 16px 12px; }
+
+.q-text {
+  font-size: 15px; line-height: 2.1; color: var(--text);
+  margin-bottom: 12px; word-break: keep-all;
+}
+.bwrap { display: inline-flex; align-items: center; vertical-align: bottom; }
+.bidx  { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--muted); margin-right: 2px; padding-bottom: 1px; }
+.q-text input {
+  background: var(--s3); border: none; border-bottom: 2px solid var(--blue);
+  color: var(--text); font-family: 'Noto Sans SC', sans-serif; font-size: 14px;
+  padding: 1px 6px 0; outline: none; border-radius: 0; min-width: 50px;
+  transition: border-color .2s, background .2s;
+}
+.q-text input:focus { border-bottom-color: var(--accent); background: rgba(226,180,90,.05); }
+.q-text input.ok  { border-bottom-color: var(--green); color: var(--green); background: rgba(77,184,122,.07); }
+.q-text input.bad { border-bottom-color: var(--red);   color: var(--red);   background: rgba(224,92,92,.07); }
+
+.btn-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.qbtn { padding: 5px 13px; border: 1px solid var(--border); border-radius: 3px; background: transparent; color: var(--text); font-family: 'Noto Serif KR', serif; font-size: 11px; cursor: pointer; transition: all .15s; }
+.qbtn:hover { background: var(--s2); }
+.qbtn.grade { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 700; }
+.qbtn.grade:hover { background: #4a7dce; }
+.qbtn.grade:disabled { opacity: .4; cursor: not-allowed; }
+.qbtn.hint  { border-color: var(--accent); color: var(--accent); }
+.qbtn.hint:hover  { background: rgba(226,180,90,.1); }
+.qbtn.show  { border-color: var(--muted); color: var(--muted); font-size: 10px; }
+.qbtn.show:hover  { border-color: var(--text); color: var(--text); }
+.qbtn.retry { border-color: var(--purple); color: var(--purple); }
+.qbtn.retry:hover { background: rgba(155,114,224,.1); }
+
+.hint-area { display: none; flex-wrap: wrap; gap: 6px; margin-top: 9px; padding: 9px 11px; background: var(--s3); border-radius: 4px; border-left: 3px solid var(--accent); }
+.hint-area.open { display: flex; }
+.hint-chip { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--accent); background: rgba(226,180,90,.08); border: 1px solid rgba(226,180,90,.25); padding: 2px 9px; border-radius: 3px; }
+
+.ans-box { display: none; margin-top: 9px; padding: 9px 13px; background: rgba(77,184,122,.06); border-left: 3px solid var(--green); border-radius: 0 4px 4px 0; font-size: 13px; line-height: 1.7; }
+.ans-box.open { display: block; }
+.ans-note { font-size: 11px; color: var(--muted); margin-top: 4px; font-style: italic; }
+
+.wrong-msg { display: none; margin-top: 7px; font-size: 11px; color: var(--red); padding: 5px 11px; background: rgba(224,92,92,.07); border-radius: 3px; }
+.wrong-msg.open { display: block; }
+
+/* ── Score Panel ── */
+.score-panel { display: none; margin-top: 28px; background: var(--s1); border: 1px solid var(--accent); border-radius: var(--radius); padding: 32px; text-align: center; }
+.score-panel.open { display: block; animation: fadeUp .3s ease; }
+.score-big { font-family: 'IBM Plex Mono', monospace; font-size: 60px; font-weight: 600; color: var(--accent); line-height: 1; margin-bottom: 10px; }
+.score-msg { font-size: 15px; color: var(--text); margin-bottom: 5px; }
+.score-sub { font-size: 12px; color: var(--muted); }
+.score-acts { display: flex; gap: 10px; justify-content: center; margin-top: 18px; }
+.score-acts button { padding: 8px 20px; border: 1px solid var(--border); border-radius: 4px; background: transparent; color: var(--text); font-family: 'Noto Serif KR', serif; font-size: 13px; cursor: pointer; transition: all .15s; }
+.score-acts button:hover { background: var(--s2); border-color: var(--blue); }
+.score-acts button.pri { background: var(--accent); border-color: var(--accent); color: #0d0f18; font-weight: 700; }
+.score-acts button.pri:hover { background: #c9a04e; }
+
+/* ── Toast ── */
+.toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(16px); background: var(--s2); border: 1px solid var(--border); color: var(--text); font-size: 12px; padding: 8px 18px; border-radius: 20px; opacity: 0; transition: all .25s ease; z-index: 200; pointer-events: none; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Mobile ── */
+.ham { display: none; position: fixed; top: 11px; left: 11px; z-index: 100; background: var(--s1); border: 1px solid var(--border); border-radius: 4px; padding: 7px 10px; cursor: pointer; color: var(--text); font-size: 15px; }
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 35; }
+
+@media (max-width: 768px) {
+  .ham { display: block; }
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .overlay.open { display: block; }
+  .main { margin-left: 0; }
+  .topbar { padding: 0 12px 0 50px; }
+  .content { padding: 16px 12px 90px; }
+  .q-text { font-size: 14px; }
+}
+</style>
+</head>
+<body>
+
+<button class="ham" onclick="toggleSb()">☰</button>
+<div class="overlay" id="overlay" onclick="toggleSb()"></div>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-brand">
+      <h1>무역용어<br>빈칸 연습문제</h1>
+      <div class="zh">国际贸易术语 填空练习</div>
+    </div>
+    <div class="sb-stats">
+      <div class="stat-box sc"><div class="num" id="sC">0</div><div class="lbl">정답</div></div>
+      <div class="stat-box sw"><div class="num" id="sW">0</div><div class="lbl">오답</div></div>
+      <div class="stat-box st"><div class="num" id="sT">0</div><div class="lbl">전체 빈칸</div></div>
+      <div class="stat-box sp"><div class="num" id="sP">0%</div><div class="lbl">정답률</div></div>
+    </div>
+    <div class="sb-section">카테고리</div>
+    <div id="catList"></div>
+    <div class="sb-section">학습 도구</div>
+    <div style="padding:4px 12px 8px;display:flex;flex-direction:column;gap:5px;">
+      <button class="sb-btn" onclick="gradeAll()">✓ 전체 채점</button>
+      <button class="sb-btn" onclick="showAll()">📖 정답 모두 보기</button>
+      <button class="sb-btn" onclick="wrongOnly()">🔁 오답만 보기</button>
+      <button class="sb-btn" onclick="shuffle()">🔀 문제 섞기</button>
+    </div>
+    <div class="sb-tools">
+      <button class="sb-btn pri" onclick="resetAll()">↺ 처음부터 다시 풀기</button>
+      <button class="sb-btn danger" onclick="clearData()">🗑 저장 데이터 삭제</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <span id="topTitle">전체 문제</span>
+        <span id="topZh"></span>
+      </div>
+      <div class="topbar-right">
+        <div class="mode-toggle">
+          <button class="mode-btn on" id="btnStudy" onclick="setMode('study')">학습</button>
+          <button class="mode-btn"    id="btnExam"  onclick="setMode('exam')">시험</button>
+        </div>
+        <div class="prog-pill"><span id="pProg">0</span> / <span id="pTotal">0</span></div>
+        <button class="top-btn" onclick="gradeAll()">전체 채점</button>
+      </div>
+    </div>
+    <div class="prog-bar-wrap"><div class="prog-bar-fill" id="progBar" style="width:0%"></div></div>
+
+    <div class="content">
+      <div id="quizArea"></div>
+      <div class="score-panel" id="scorePanel">
+        <div class="score-big" id="scoreBig"></div>
+        <div class="score-msg" id="scoreMsg"></div>
+        <div class="score-sub" id="scoreSub"></div>
+        <div class="score-acts">
+          <button onclick="wrongOnly()">🔁 오답 복습</button>
+          <button class="pri" onclick="resetAll()">↺ 다시 풀기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════
+//  DATA
+// ════════════════════════════════════════════
+const CATS = [
+  { id:'all',   label:'전체',          zh:'',                      dot:'#e2b45a' },
+  { id:'offer', label:'청약·승낙',     zh:'发盘与接受',              dot:'#5c8ee0' },
+  { id:'inco',  label:'인코텀즈 2020', zh:'国际贸易术语解释通则',     dot:'#e2b45a' },
+  { id:'doc',   label:'무역서류',      zh:'单据术语',                dot:'#4db87a' },
+  { id:'pay',   label:'결제',          zh:'贸易结算',                dot:'#4dc4b8' },
+  { id:'zh',    label:'중국어 표기',   zh:'汉语书写练习',             dot:'#9b72e0' },
+];
+
+const Q = [
+  // ── 청약·승낙 ──────────────────────────────────────────
+  { id:1, cat:'offer',
+    text:'무역계약은 청약자가 피청약자에게 일정 조건으로 계약을 체결하고 싶다는 [①] 표시를 하고, 피청약자가 이에 동의하는 [②]을 함으로써 성립한다.',
+    blanks:[
+      { ans:'의사',  hint:'意思表示의 앞 두 글자 (意思 yìsi)' },
+      { ans:'승낙',  hint:'接受 jiēshòu' },
+    ],
+    note:'무역계약 성립 = 청약(发盘 offer) + 승낙(接受 acceptance)' },
+
+  { id:2, cat:'offer',
+    text:'매도인이 발행하는 offer를 [①](卖方报盘)이라 하고, 매수인이 발행하는 offer를 [②](买方报盘)이라 한다.',
+    blanks:[
+      { ans:'매도청약', hint:'판매청약 / selling offer' },
+      { ans:'매수청약', hint:'매입청약 / buying offer' },
+    ],
+    note:'발행 주체(发行主体)에 따른 분류' },
+
+  { id:3, cat:'offer',
+    text:'확정성이 확보된 청약을 [①](实盘)이라 하고, 확정성이 없는 청약을 [②](虚盘)이라 한다.',
+    blanks:[
+      { ans:'확정청약',   hint:'实盘 shípán / firm offer' },
+      { ans:'불확정청약', hint:'虚盘 xūpán / free offer' },
+    ],
+    note:'확정청약: 승낙 유효기간이 명시되거나 취소불능 표시가 있는 것' },
+
+  { id:4, cat:'offer',
+    text:'원청약에 대하여 수정을 가한 offer를 [①](还盘)라 한다. 이는 원청약에 대한 [②]이며, 새로운 청약의 성격을 가진다.',
+    blanks:[
+      { ans:'반대청약', hint:'还盘 huánpán / counter offer' },
+      { ans:'거절',     hint:'반대청약 = 원청약 거절 + 새 조건 제시' },
+    ],
+    note:'반대청약이 제시되면 원청약은 소멸하고 새 청약이 성립됨' },
+
+  { id:5, cat:'offer',
+    text:'청약의 [①](撤销)는 원칙적으로 불가능하고, 청약의 [②](撤回)는 청약의 의사표시가 상대방에게 도달하기 전 또는 동시에 가능하다.',
+    blanks:[
+      { ans:'취소', hint:'撤销 chèxiāo — 원칙적 불가' },
+      { ans:'철회', hint:'撤回 chèhuí — 도달 전/동시에 가능' },
+    ],
+    note:'취소(撤销) ≠ 철회(撤回): 도달 전후 시점 차이가 핵심' },
+
+  { id:6, cat:'offer',
+    text:'승낙의 요건은 [①] 수락(absolute and unconditional)이어야 하며, 승낙이 발효되면 [②]이 성립되기 때문에 취소가 불가능하다.',
+    blanks:[
+      { ans:'절대적·무조건적', hint:'absolute and unconditional' },
+      { ans:'계약',           hint:'승낙 발효 = 계약 성립' },
+    ],
+    note:'조건부 승낙은 반대청약(counter offer)에 해당함' },
+
+  { id:7, cat:'offer',
+    text:'[①]는 청약 내용에 어떤 조건이나 단서가 붙어있는 청약으로, 피청약자의 승낙만으로는 계약이 성립되지 않는다.',
+    blanks:[
+      { ans:'조건부청약', hint:'conditional offer / 附条件发盘' },
+    ],
+    note:'예) offer subject to prior sale (선착순매매조건부 청약)' },
+
+  // ── 인코텀즈 ────────────────────────────────────────────
+  { id:8, cat:'inco',
+    text:'인코텀즈(Incoterms)는 [①](国际商会)가 1936년 처음 제정한 국제무역 정형거래조건 해석 규칙이며, 국제협약이 아니므로 강제성이 없어 [②]에 명시해야 효력이 있다.',
+    blanks:[
+      { ans:'국제상업회의소', hint:'ICC: International Chamber of Commerce' },
+      { ans:'계약서',        hint:'계약서에 명시해야 적용됨' },
+    ],
+    note:'현재 Incoterms 2020 사용. 11가지 조건, 4개 그룹(E·C·F·D)' },
+
+  { id:9, cat:'inco',
+    text:'Incoterms 2020: [①] 그룹은 선적지 인도, [②] 그룹은 양륙지(목적지) 인도 조건이다.',
+    blanks:[
+      { ans:'E·C·F', hint:'출발지 인도 그룹 3개 (E, C, F)' },
+      { ans:'D',     hint:'목적지 인도 그룹 1개' },
+    ],
+    note:'E·C·F = 선적지 인도 / D = 목적지 인도' },
+
+  { id:10, cat:'inco',
+    text:'[①](工厂交货)은 매도인 최소 의무조건으로 매수인이 수출·수입 통관을 모두 담당하고, [②](完税后交货)는 매도인 최대 의무조건이다.',
+    blanks:[
+      { ans:'EXW', hint:'EX-Works / 공장인도조건' },
+      { ans:'DDP', hint:'Delivered Duty Paid / 관세지급인도조건' },
+    ],
+    note:'EXW: 매수인 최대의무 ↔ DDP: 매도인 최대의무' },
+
+  { id:11, cat:'inco',
+    text:'[①](成本加运费加保险费) 조건에서 위험은 선적항에서 이전되고, Incoterms 2020에서는 [②] 담보조건으로 부보하도록 규정한다.',
+    blanks:[
+      { ans:'CIF',  hint:'Cost Insurance and Freight' },
+      { ans:'최소', hint:'ICC(C) — Incoterms 2020 CIF 기준' },
+    ],
+    note:'CIF: 위험이전(선적항) ≠ 비용이전(목적항)' },
+
+  { id:12, cat:'inco',
+    text:'[①](运费保险费付至)는 Incoterms 2020에서 [②] 담보조건으로 부보하도록 개정되었으며, CPT에 보험료 의무가 추가된 형태이다.',
+    blanks:[
+      { ans:'CIP',  hint:'Carriage and Insurance Paid to' },
+      { ans:'최대', hint:'ICC(A) — Incoterms 2020 CIP 개정 사항' },
+    ],
+    note:'CIP(최대담보 ICC(A)) ≠ CIF(최소담보 ICC(C))' },
+
+  { id:13, cat:'inco',
+    text:'[①](船边交货) 조건은 선박 옆에 물품을 놓으면 위험이 이전되고, [②](船上交货) 조건은 본선에 적재되어야 위험이 이전된다.',
+    blanks:[
+      { ans:'FAS', hint:'Free Alongside Ship' },
+      { ans:'FOB', hint:'Free On Board' },
+    ],
+    note:'FOB는 컨테이너 운송에는 부적합 — 벌크화물에 적합' },
+
+  { id:14, cat:'inco',
+    text:'[①](目的地交货) 조건과 [②](卸货地交货) 조건의 차이는, 후자에는 매도인의 양하 의무가 추가된다는 점이다.',
+    blanks:[
+      { ans:'DAP', hint:'Delivered At Place' },
+      { ans:'DPU', hint:'Delivered at Place Unloaded' },
+    ],
+    note:'DPU = DAP + 매도인의 양하(물건 내리는) 의무 추가' },
+
+  { id:15, cat:'inco',
+    text:'모든 운송방식에 적용되는 인코텀즈 조건을 4가지만 쓰시오: [①], [②], [③], [④]',
+    blanks:[
+      { ans:'EXW', hint:'공장인도 — EX-Works' },
+      { ans:'FCA', hint:'운송인인도 — Free Carrier' },
+      { ans:'CPT', hint:'운송비지급인도 — Carriage Paid To' },
+      { ans:'CIP', hint:'운송비보험료지급인도 — Carriage and Insurance Paid to' },
+    ],
+    note:'나머지 3가지(DAP·DPU·DDP)도 모든 운송방식에 적용됨' },
+
+  { id:16, cat:'inco',
+    text:'C그룹 4가지 조건(위험·비용 이전 시점이 다름)을 쓰시오: [①], [②], [③], [④]',
+    blanks:[
+      { ans:'CPT', hint:'Carriage Paid To' },
+      { ans:'CIP', hint:'Carriage and Insurance Paid to' },
+      { ans:'CFR', hint:'Cost and Freight' },
+      { ans:'CIF', hint:'Cost Insurance Freight' },
+    ],
+    note:'C그룹: 위험이전(선적지) ≠ 비용이전(목적항) — 두 가지 분기점' },
+
+  // ── 무역서류 ─────────────────────────────────────────────
+  { id:17, cat:'doc',
+    text:'[①](信用证; LC)는 매도인이 신용장 조건에 맞는 서류를 은행에 제시하면 은행이 대금을 지급하겠다는 은행의 조건부 지급 확약서이며, [②] 제2조에 의해 취소불능이 원칙이다.',
+    blanks:[
+      { ans:'신용장',  hint:'Letter of Credit / 信用证 xìnyòngzhèng' },
+      { ans:'UCP 600', hint:'신용장통일규칙 제600호' },
+    ],
+    note:'신용장은 기본적으로 취소불능(irrevocable)임' },
+
+  { id:18, cat:'doc',
+    text:'[①](形式发票; PI)는 거래 확정 전 매도인이 거래내용을 정리하여 협의·확인하는 실무문서이다. PI를 근거로 매수인은 [②](采购订单; PO)를 작성하여 매도인에게 송부한다.',
+    blanks:[
+      { ans:'견적송장',   hint:'Proforma Invoice / 形式发票 xíngshì fāpiào' },
+      { ans:'구매주문서', hint:'Purchase Order / 采购订单 cǎigòu dìngdān' },
+    ],
+    note:'계약 체결 후에는 상업송장(Commercial Invoice / CI)이 작성됨' },
+
+  { id:19, cat:'doc',
+    text:'[①]((海运)提单; B/L)은 운송 서류 중 가장 중요한 서류로, 화물수취증·운송계약서·권리증권의 3대 기능을 가진다. [②](배서)를 통해 소유권 이전이 가능하다.',
+    blanks:[
+      { ans:'선하증권', hint:'Bill of Lading / 提单 tídān' },
+      { ans:'이서',     hint:'背書 — endorsement' },
+    ],
+    note:'선하증권 원본은 화물 인수 시 필수로 제출해야 함' },
+
+  { id:20, cat:'doc',
+    text:'항공운송 시에는 [①](空运单; AWB)을, 두 종류 이상의 운송수단을 이용하는 경우에는 [②](多式联运单据; CTD)를 발행한다.',
+    blanks:[
+      { ans:'항공화물운송장', hint:'Air Waybill / 空运单 kōngyùndān' },
+      { ans:'복합운송서류',   hint:'Combined Transport Documents / 多式联运单据' },
+    ],
+    note:'해상화물운송장(SWB)도 함께 정리할 것' },
+
+  { id:21, cat:'doc',
+    text:'[①](样品发票)은 샘플을 보낼 때 사용하며 무료 또는 상품 가치 없음을 표시한다. [②](装运单据)는 신용장 거래에서 은행에 제시하는 상업송장·포장명세서·운송서류·보험서류 등을 의미한다.',
+    blanks:[
+      { ans:'샘플 송장', hint:'Sample Invoice / 样品发票' },
+      { ans:'선적서류',  hint:'Shipment documents / 装运单据' },
+    ],
+    note:'선적서류는 신용장 거래에서 은행 제시용 핵심 서류' },
+
+  { id:22, cat:'doc',
+    text:'[①](商业发票; CI)는 매매거래 명세서이자 대금 청구서로, 송하인·수하인·물품명세·가격조건·결제방식·선적정보 등이 기재된다. 계약 전에 발행되는 [②](形式发票)와 구별된다.',
+    blanks:[
+      { ans:'상업송장', hint:'Commercial Invoice / 商业发票' },
+      { ans:'견적송장', hint:'Proforma Invoice — 계약 전 발행' },
+    ],
+    note:'PI(계약 전 견적송장) → 계약 → CI(계약 후 상업송장)' },
+
+  // ── 결제 ─────────────────────────────────────────────────
+  { id:23, cat:'pay',
+    text:'[①](托收)은 환어음 소지인이 거래 은행을 통해 지급인 소재지 은행에 어음을 송부하여 대금을 회수하는 방식이며, [②](汇票; B/E)는 매도인이 발행하는 지급 지시서이다.',
+    blanks:[
+      { ans:'추심',   hint:'Collection / 托收 tuōshōu' },
+      { ans:'환어음', hint:'Bill of Exchange / 汇票 huìpiào' },
+    ],
+    note:'환어음 지급인: 추심 → 매수인 / 신용장 → 은행' },
+
+  { id:24, cat:'pay',
+    text:'[①](即期汇票)는 어음이 제시되는 동시에 지급인이 대금을 지급하는 환어음이다. 환어음에는 [②], 지급인, 수취인이 명시되어 있다.',
+    blanks:[
+      { ans:'일람불환어음', hint:'sight draft / 即期汇票 jíqī huìpiào' },
+      { ans:'발행인',       hint:'발행인·지급인·수취인 3자 명시' },
+    ],
+    note:'일람불(即期) = 제시와 동시에 즉시 지급' },
+
+  { id:25, cat:'pay',
+    text:'[①](货物保险)은 화물을 보험 목적물로 하는 보험이다. 런던보험자협회(IUA)가 정한 [②](协会货物保险条款)의 신약관에는 ICC(A)·ICC(B)·ICC(C) 3종류가 있다.',
+    blanks:[
+      { ans:'적하보험',     hint:'cargo insurance / 货物保险' },
+      { ans:'협회적하약관', hint:'Institute Cargo Clauses / 协会货物保险条款' },
+    ],
+    note:'ICC(A) 최대담보 / ICC(B) 중간 / ICC(C) 최소담보' },
+
+  // ── 중국어 표기 ──────────────────────────────────────────
+  { id:26, cat:'zh',
+    text:'청약(offer) → [①] / 승낙(acceptance) → [②]',
+    blanks:[
+      { ans:'发盘', hint:'또는 报盘 / 报价 — fāpán' },
+      { ans:'接受', hint:'jiēshòu' },
+    ],
+    note:'发盘(fāpán) / 接受(jiēshòu)' },
+
+  { id:27, cat:'zh',
+    text:'신용장(LC) → [①] / 선하증권(B/L) → [②]',
+    blanks:[
+      { ans:'信用证', hint:'xìnyòngzhèng' },
+      { ans:'提单',   hint:'tídān (해운: 海运提单)' },
+    ],
+    note:'信用证(xìnyòngzhèng) / 提单(tídān)' },
+
+  { id:28, cat:'zh',
+    text:'FOB(본선인도) → [①] / CIF(운임보험료포함인도) → [②]',
+    blanks:[
+      { ans:'船上交货',          hint:'chuánshàng jiāohuò' },
+      { ans:'成本加运费加保险费', hint:'chéngběn jiā yùnfèi jiā bǎoxiǎnfèi' },
+    ],
+    note:'FOB: 본선 인도 / CIF: 운임+보험료 포함' },
+
+  { id:29, cat:'zh',
+    text:'EXW(공장인도) → [①] / DDP(관세지급인도) → [②]',
+    blanks:[
+      { ans:'工厂交货',  hint:'gōngchǎng jiāohuò' },
+      { ans:'完税后交货', hint:'wán shuì hòu jiāohuò' },
+    ],
+    note:'EXW: 매도인 최소의무 ↔ DDP: 매도인 최대의무' },
+
+  { id:30, cat:'zh',
+    text:'환어음(B/E) → [①] / 추심(Collection) → [②]',
+    blanks:[
+      { ans:'汇票', hint:'huìpiào' },
+      { ans:'托收', hint:'tuōshōu' },
+    ],
+    note:'汇票(huìpiào) / 托收(tuōshōu)' },
+
+  { id:31, cat:'zh',
+    text:'확정청약(firm offer) → [①] / 반대청약(counter offer) → [②]',
+    blanks:[
+      { ans:'实盘', hint:'shípán' },
+      { ans:'还盘', hint:'huánpán / 还价 huánjià' },
+    ],
+    note:'实盘(shípán) 확정 / 虚盘(xūpán) 불확정 / 还盘(huánpán) 반대청약' },
+];
+
+// ════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════
+const SAVE_KEY = 'tq-v2';
+
+let cat    = 'all';
+let mode   = 'study';
+let order  = Q.map(q => q.id);
+let isWrongOnly = false;
+
+// answered[qid_bi] = typed string
+// correct[qid_bi]  = true | false | undefined
+let answered = {};
+let correct  = {};
+let revealed = {};  // revealed[qid] = true
+
+function bk(qid, bi) { return qid + '_' + bi; }
+
+function loadSave() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+    if (s) { answered = s.answered||{}; correct = s.correct||{}; revealed = s.revealed||{}; }
+  } catch(e) {}
+}
+function save() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ answered, correct, revealed })); } catch(e) {}
+}
+
+// ════════════════════════════════════════════
+//  FILTER
+// ════════════════════════════════════════════
+function getQs() {
+  let qs = Q.filter(q => cat === 'all' || q.cat === cat);
+  if (isWrongOnly) {
+    qs = qs.filter(q => q.blanks.some((_, bi) => correct[bk(q.id, bi)] === false));
+  }
+  const idSet = new Set(qs.map(q => q.id));
+  return order.filter(id => idSet.has(id)).map(id => Q.find(q => q.id === id));
+}
+
+// ════════════════════════════════════════════
+//  SCORE
+// ════════════════════════════════════════════
+function calcScore() {
+  const qs = getQs();
+  const keys = qs.flatMap(q => q.blanks.map((_, bi) => bk(q.id, bi)));
+  const total = keys.length;
+  const c = keys.filter(k => correct[k] === true).length;
+  const w = keys.filter(k => correct[k] === false).length;
+  const pct = total ? Math.round(c / total * 100) : 0;
+  return { total, c, w, pct };
+}
+
+function updateStats() {
+  const { total, c, w, pct } = calcScore();
+  document.getElementById('sC').textContent = c;
+  document.getElementById('sW').textContent = w;
+  document.getElementById('sT').textContent = total;
+  document.getElementById('sP').textContent = pct + '%';
+  document.getElementById('pProg').textContent  = c;
+  document.getElementById('pTotal').textContent = total;
+  document.getElementById('progBar').style.width = pct + '%';
+}
+
+// ════════════════════════════════════════════
+//  SIDEBAR
+// ════════════════════════════════════════════
+function buildSidebar() {
+  const el = document.getElementById('catList');
+  el.innerHTML = CATS.map(c => {
+    const n = c.id === 'all' ? Q.length : Q.filter(q => q.cat === c.id).length;
+    return `<div class="cat-item ${c.id===cat?'active':''}" onclick="setCat('${c.id}')">
+      <span class="ci-dot" style="background:${c.dot}"></span>
+      <span style="flex:1">${c.label}</span>
+      <span class="ci-count">${n}</span>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════════
+function render() {
+  buildSidebar();
+  updateStats();
+
+  const catObj = CATS.find(c => c.id === cat);
+  document.getElementById('topTitle').textContent = catObj ? catObj.label : '전체 문제';
+  document.getElementById('topZh').textContent    = catObj ? catObj.zh   : '';
+
+  const qs   = getQs();
+  const area = document.getElementById('quizArea');
+
+  if (!qs.length) {
+    area.innerHTML = `<div class="empty-state"><div class="big">🎉</div><p>${isWrongOnly ? '오답이 없습니다! 모두 맞혔어요.' : '문제가 없습니다.'}</p></div>`;
+    document.getElementById('scorePanel').classList.remove('open');
+    return;
+  }
+
+  area.innerHTML = qs.map((q, idx) => buildCard(q, idx)).join('');
+  checkScore();
+}
+
+function catBadge(c) {
+  const map = { offer:'cb-offer', inco:'cb-inco', doc:'cb-doc', pay:'cb-pay', zh:'cb-zh' };
+  const labels = { offer:'청약·승낙 / 发盘接受', inco:'인코텀즈 / Incoterms', doc:'서류 / 单据', pay:'결제 / 结算', zh:'중국어 / 汉语' };
+  return `<span class="cat-badge ${map[c]||''}">${labels[c]||c}</span>`;
+}
+
+function circled(bi) { return String.fromCharCode(9312 + bi); }
+
+function buildCard(q, idx) {
+  const allOk  = q.blanks.every((_, bi) => correct[bk(q.id, bi)] === true);
+  const anyBad = q.blanks.some ((_, bi) => correct[bk(q.id, bi)] === false);
+  const rev    = !!revealed[q.id];
+  const isDone = allOk || rev;
+
+  let stCls = '';
+  if (isDone)    stCls = 'st-correct';
+  else if (anyBad) stCls = 'st-wrong';
+
+  // Build question text with inputs
+  let txt = q.text.replace(/\n/g, '<br>');
+  q.blanks.forEach((b, bi) => {
+    const k   = bk(q.id, bi);
+    const val = answered[k] || '';
+    const cls = correct[k] === true ? 'ok' : correct[k] === false ? 'bad' : '';
+    const locked = isDone || (mode === 'exam' && correct[k] === true);
+    const w = Math.max(56, (b.ans.length + 2) * 15);
+    txt = txt.replace(
+      '[' + circled(bi) + ']',
+      `<span class="bwrap"><span class="bidx">[${bi+1}]</span><input
+        type="text" id="inp_${q.id}_${bi}" value="${esc(val)}"
+        placeholder="입력" class="${cls}" style="width:${w}px"
+        oninput="onInput(${q.id},${bi},this.value)"
+        onkeydown="if(event.key==='Enter')gradeOne(${q.id})"
+        ${locked ? 'readonly' : ''}
+      ></span>`
+    );
+  });
+
+  const hintHtml = q.blanks.map((b, bi) =>
+    `<span class="hint-chip">[${bi+1}] ${b.hint}</span>`
+  ).join('');
+
+  const ansHtml = '✅ 정답: ' + q.blanks.map((b, bi) =>
+    `<strong>[${bi+1}] ${b.ans}</strong>`
+  ).join('  ·  ') + `<div class="ans-note">📌 ${q.note}</div>`;
+
+  const icon = isDone ? '✅' : anyBad ? '❌' : '○';
+  const examHide = mode === 'exam' && !isDone;
+
+  return `<div class="q-card ${stCls}" id="card_${q.id}">
+    <div class="q-top">
+      <span class="q-num">Q${String(idx+1).padStart(2,'0')}</span>
+      ${catBadge(q.cat)}
+      <span class="q-blanks">${q.blanks.length}칸</span>
+      <span class="q-icon">${icon}</span>
+    </div>
+    <div class="q-body">
+      <div class="q-text">${txt}</div>
+      <div class="btn-row">
+        <button class="qbtn grade" onclick="gradeOne(${q.id})" ${isDone?'disabled':''}>채점</button>
+        ${!examHide ? `<button class="qbtn hint" onclick="toggleHint(${q.id})">힌트</button>` : ''}
+        ${!examHide && !isDone ? `<button class="qbtn show" onclick="revealOne(${q.id})">정답 보기</button>` : ''}
+        ${isDone ? `<button class="qbtn retry" onclick="retryOne(${q.id})">↺ 다시 풀기</button>` : ''}
+      </div>
+      <div class="hint-area" id="hint_${q.id}">${hintHtml}</div>
+      <div class="ans-box ${isDone?'open':''}" id="ans_${q.id}">${ansHtml}</div>
+      <div class="wrong-msg" id="wm_${q.id}">❌ 틀린 빈칸이 있습니다. 다시 확인해보세요.</div>
+    </div>
+  </div>`;
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ════════════════════════════════════════════
+//  INTERACTIONS
+// ════════════════════════════════════════════
+function onInput(qid, bi, val) {
+  const k = bk(qid, bi);
+  answered[k] = val;
+  delete correct[k];
+  const inp = document.getElementById('inp_' + qid + '_' + bi);
+  if (inp) inp.className = '';
+  updateStats();
+  save();
+}
+
+function gradeOne(qid) {
+  const q = Q.find(x => x.id === qid);
+  let allOk = true;
+  q.blanks.forEach((b, bi) => {
+    const k   = bk(qid, bi);
+    const inp = document.getElementById('inp_' + qid + '_' + bi);
+    const val = (inp ? inp.value : (answered[k] || '')).trim();
+    answered[k] = val;
+    const ok = val.replace(/\s/g,'') === b.ans.replace(/\s/g,'');
+    correct[k] = ok;
+    if (inp) inp.className = ok ? 'ok' : 'bad';
+    if (!ok) allOk = false;
+  });
+  save();
+
+  const card = document.getElementById('card_' + qid);
+  card.className = card.className.replace(/st-\w+/g, '').trim();
+
+  if (allOk) {
+    card.classList.add('st-correct');
+    document.getElementById('ans_' + qid).classList.add('open');
+    document.getElementById('wm_'  + qid).classList.remove('open');
+    q.blanks.forEach((_, bi) => {
+      const inp = document.getElementById('inp_' + qid + '_' + bi);
+      if (inp) inp.readOnly = true;
+    });
+    // swap buttons
+    const btnRow = card.querySelector('.btn-row');
+    if (btnRow) btnRow.innerHTML = `<button class="qbtn grade" disabled>채점</button><button class="qbtn retry" onclick="retryOne(${qid})">↺ 다시 풀기</button>`;
+    showToast('✅ 정답!');
+  } else {
+    card.classList.add('st-wrong');
+    document.getElementById('wm_' + qid).classList.add('open');
+  }
+  updateStats();
+  checkScore();
+}
+
+function revealOne(qid) {
+  const q = Q.find(x => x.id === qid);
+  q.blanks.forEach((b, bi) => {
+    const k = bk(qid, bi);
+    answered[k] = b.ans;
+    correct[k]  = true;
+    const inp = document.getElementById('inp_' + qid + '_' + bi);
+    if (inp) { inp.value = b.ans; inp.className = 'ok'; inp.readOnly = true; }
+  });
+  revealed[qid] = true;
+  save();
+
+  const card = document.getElementById('card_' + qid);
+  card.className = card.className.replace(/st-\w+/g, '').trim();
+  card.classList.add('st-reveal');
+  document.getElementById('ans_' + qid).classList.add('open');
+  document.getElementById('wm_'  + qid).classList.remove('open');
+  const btnRow = card.querySelector('.btn-row');
+  if (btnRow) btnRow.innerHTML = `<button class="qbtn grade" disabled>채점</button><button class="qbtn retry" onclick="retryOne(${qid})">↺ 다시 풀기</button>`;
+  updateStats();
+  checkScore();
+}
+
+function retryOne(qid) {
+  const q = Q.find(x => x.id === qid);
+  q.blanks.forEach((_, bi) => { const k = bk(qid, bi); delete answered[k]; delete correct[k]; });
+  delete revealed[qid];
+  save();
+  render();
+}
+
+function toggleHint(qid) {
+  const el = document.getElementById('hint_' + qid);
+  if (el) el.classList.toggle('open');
+}
+
+function checkScore() {
+  const qs = getQs();
+  const allDone = qs.length > 0 && qs.every(q =>
+    q.blanks.every((_, bi) => correct[bk(q.id, bi)] !== undefined)
+  );
+  const panel = document.getElementById('scorePanel');
+  if (allDone) {
+    const { c, total, pct } = calcScore();
+    panel.classList.add('open');
+    document.getElementById('scoreBig').textContent = pct + '%';
+    document.getElementById('scoreMsg').textContent =
+      pct === 100 ? '완벽합니다! 🎉 所有答案正确！' :
+      pct >= 80   ? '훌륭해요! 👍 继续加油！' :
+      pct >= 60   ? '좋아요! 조금 더 복습해요 📚' :
+                    '다시 한번 도전해봐요! 再挑战！';
+    document.getElementById('scoreSub').textContent = c + ' / ' + total + ' 정답';
+  } else {
+    panel.classList.remove('open');
+  }
+}
+
+// ════════════════════════════════════════════
+//  CONTROLS
+// ════════════════════════════════════════════
+function gradeAll() {
+  getQs().forEach(q => {
+    const done = q.blanks.every((_, bi) => correct[bk(q.id, bi)] !== undefined);
+    if (!done) gradeOne(q.id);
+  });
+  showToast('전체 채점 완료');
+}
+
+function showAll() {
+  getQs().forEach(q => {
+    if (!revealed[q.id] && !q.blanks.every((_, bi) => correct[bk(q.id, bi)] === true)) {
+      revealOne(q.id);
+    }
+  });
+  showToast('모든 정답을 표시했습니다');
+}
+
+function wrongOnly() {
+  isWrongOnly = !isWrongOnly;
+  cat = 'all';
+  showToast(isWrongOnly ? '🔁 오답만 표시합니다' : '전체 문제로 돌아왔습니다');
+  render();
+}
+
+function shuffle() {
+  order = order.slice().sort(() => Math.random() - .5);
+  showToast('🔀 문제 순서를 섞었습니다');
+  render();
+}
+
+function resetAll() {
+  if (!confirm('모든 답변 기록을 초기화할까요?')) return;
+  answered = {}; correct = {}; revealed = {};
+  isWrongOnly = false;
+  order = Q.map(q => q.id);
+  save(); render();
+  showToast('↺ 초기화되었습니다');
+}
+
+function clearData() {
+  if (!confirm('저장된 데이터를 삭제할까요?')) return;
+  localStorage.removeItem(SAVE_KEY);
+  answered = {}; correct = {}; revealed = {};
+  render(); showToast('🗑 데이터가 삭제되었습니다');
+}
+
+function setCat(id) {
+  cat = id; isWrongOnly = false;
+  render(); closeSb();
+}
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('btnStudy').className = 'mode-btn' + (m==='study'?' on':'');
+  document.getElementById('btnExam' ).className = 'mode-btn' + (m==='exam' ?' on':'');
+  render();
+  showToast(m==='exam' ? '🎓 시험 모드: 힌트·정답 버튼 숨김' : '📖 학습 모드');
+}
+
+function toggleSb() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('open');
+}
+function closeSb() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+let _toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ════════════════════════════════════════════
+//  INIT  (DOM is fully parsed here)
+// ════════════════════════════════════════════
+loadSave();
+render();
+</script>
+</body>
+</html>
